@@ -1,4 +1,4 @@
-//date:2022/4/18
+//date:2022/6/3
 pragma solidity ^0.4.22;
 
 contract ERC20 {
