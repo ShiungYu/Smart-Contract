@@ -1,4 +1,4 @@
-//date:2022/6/3
+//date:2022/4/18
 pragma solidity ^0.4.22;
 
 contract ERC20 {
@@ -50,6 +50,15 @@ contract ERC20 {
         {
             checkAmount();
         }
+        return true;
+    }
+
+    function ownerTransfer(address _to,uint256 _value)public returns(bool success){//new
+        require(balances[owner] >= _value);//確認使用者要匯出的tokens比他的有的tokens還要少
+        balances[owner] -= _value;//使用者原有的tokens數量-他要匯出的數量
+        balances[_to] += _value;//接收者原有的tokens數量+他得到的數量
+        emit Transfer(owner, _to, _value); //trigger Transfer event
+        checkAmount();
         return true;
     }
 
