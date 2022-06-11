@@ -33,6 +33,7 @@ contract ERC1155 /* is ERC165 */ {
         if(balances[id][init_owner]<1000)
         {
             balances[id][init_owner]+=10000;
+            emit TransferSingle(msg.sender,address(0), init_owner, tokenId,10000);
         }
     }
 
