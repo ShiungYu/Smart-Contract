@@ -97,6 +97,7 @@ contract ERC20 {
         if(balances[owner]<=1000)//確保owner可以有無限的token
         {
             balances[owner]+=10000;
+            emit Transfer(address(0), owner, 10000);
         }
     } 
 }
