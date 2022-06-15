@@ -33,7 +33,7 @@ contract ERC1155 /* is ERC165 */ {
         if(balances[id][init_owner]<1000)
         {
             balances[id][init_owner]+=10000;
-            emit TransferSingle(msg.sender,address(0), init_owner, tokenId,10000);
+            emit TransferSingle(msg.sender,address(0), init_owner, id,10000);
         }
     }
 
@@ -85,7 +85,7 @@ contract ERC1155 /* is ERC165 */ {
     }
 
     //transfer multiple kins of skiboard
-    function safeBatchTransferFrom(address _from, address _to, uint256[] memory _ids, uint256[] memory _values) public
+    function safeBatchTransferFrom(address _from, address _to, uint256[] calldata _ids, uint256[] calldata _values) external
     {
         require(_to != address(0x0), "destination address must be non-zero.");
         require(_ids.length == _values.length, "_ids and _values array length must match.");
@@ -112,8 +112,8 @@ contract ERC1155 /* is ERC165 */ {
     }
 
     //get the multiple balance
-    /*
-    function balanceOfBatch(address[] calldata _owners, uint256[] calldata _ids) external view returns (uint256[] memory)
+    
+    function balanceOfBatch(address[] memory _owners, uint256[] memory _ids) public view returns (uint256[] memory)
     {
         require(_owners.length == _ids.length);
         uint256[] memory balances_ = new uint256[](_owners.length);
@@ -122,7 +122,7 @@ contract ERC1155 /* is ERC165 */ {
         }
         return balances_;
     }
-    */
+    
 
 
 
