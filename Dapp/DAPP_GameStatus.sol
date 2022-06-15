@@ -26,9 +26,12 @@ interface ERC1155Interface{
     function TransferFrom(address _from, address _to, uint256 _id, uint256 _value) external;
     function safeBatchTransferFrom(address _from, address _to, uint256[] calldata _ids, uint256[] calldata _values) external;
     function balanceOf(address _owner, uint256 _id) external view returns (uint256);
-    function balanceOfBatch(address[] memory _owners, uint256[] memory _ids) external view returns (uint256[] memory);
+    function balanceOfBatch(address[] calldata _owners, uint256[] calldata _ids) external view returns (uint256[] memory);
     function setApprovalForAll(address _operator, bool _approved) external;
     function isApprovedForAll(address _owner, address _operator) external view returns (bool);
+    function create(uint256 _initialSupply, string calldata _uri) external returns(uint256 _id);
+    function mint(uint256 _id, address[] calldata _to, uint256[] calldata _quantities) external  ;
+    function setURI(string calldata _uri, uint256 _id) external ;
 }
 
 contract GameStatus{
@@ -132,9 +135,24 @@ contract GameStatus{
     }
     function erc1155balanceOf(address _owner, uint256 _id) external view returns (uint256);
     {
-        erc1155.balanceOf(address _owner, uint256 _id);
+        return erc1155.balanceOf(address _owner, uint256 _id);
     }
-    //function erc1155balanceOfBatch(address[] memory _owners, uint256[] memory _ids) external view returns (uint256[] memory);
+    function erc1155balanceOfBatch(address[] memory _owners, uint256[] memory _ids) external view returns (uint256[] memory)
+    {
+        return erc1155.balanceOfBatch(_owners,_ids);
+    }
+    function erc1155create(uint256 _initialSupply, string calldata _uri) external returns(uint256 _id)
+    {
+        return erc1155.create(_initialSupply,_uri);
+    }
+    function erc1155mint(uint256 _id, address[] calldata _to, uint256[] calldata _quantities) external
+    {
+        erc1155.mint(_id,_to,_quantities);
+    }
+    function erc1155setURI(string calldata _uri, uint256 _id) external
+    {
+        erc1155.setURI(_uri,_id);
+    }
     //function erc1155setApprovalForAll(address _operator, bool _approved) external
     //function erc1155isApprovedForAll(address _owner, address _operator) external view returns (bool); 
     //ERC1155 ends
