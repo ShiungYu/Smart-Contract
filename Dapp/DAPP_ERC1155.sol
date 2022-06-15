@@ -1,4 +1,4 @@
-pragma solidity ^0.4.22;
+pragma solidity ^0.5.0;
 //referring https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1155.md
 
 contract ERC1155 /* is ERC165 */ {
@@ -12,7 +12,7 @@ contract ERC1155 /* is ERC165 */ {
 
     
     event TransferBatch(address indexed _operator, address indexed _from, address indexed _to, uint256[] _ids, uint256[] _values);//transfer multiple kins of skiboard
-    
+    event URI(string value, uint256 indexed id);
     
     event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);//approve other to trade skiboard
 
@@ -85,7 +85,7 @@ contract ERC1155 /* is ERC165 */ {
     }
 
     //transfer multiple kins of skiboard
-    function safeBatchTransferFrom(address _from, address _to, uint256[] calldata _ids, uint256[] calldata _values) external
+    function safeBatchTransferFrom(address _from, address _to, uint256[] calldata _ids, uint256[] calldata _values, bytes calldata _data) external
     {
         require(_to != address(0x0), "destination address must be non-zero.");
         require(_ids.length == _values.length, "_ids and _values array length must match.");
@@ -113,7 +113,7 @@ contract ERC1155 /* is ERC165 */ {
 
     //get the multiple balance
     
-    function balanceOfBatch(address[] memory _owners, uint256[] memory _ids) public view returns (uint256[] memory)
+    function balanceOfBatch(address[] calldata _owners, uint256[] calldata _ids) external view returns (uint256[] memory)
     {
         require(_owners.length == _ids.length);
         uint256[] memory balances_ = new uint256[](_owners.length);
@@ -139,4 +139,63 @@ contract ERC1155 /* is ERC165 */ {
         return operatorApproval[_owner][_operator];
     }
     
+    //mint ////////////////////////////////////////////////
+
+
+
+
+
+
+     bytes4 constant private INTERFACE_SIGNATURE_URI = 0x0e89341c;
+
+    // id => creators
+    mapping (uint256 => address) public creators;
+
+    // A nonce to ensure we have a unique id each time we mint.
+    uint256 public nonce;
+
+    modifier creatorOnly(uint256 _id) {
+        require(creators[_id] == msg.sender);
+        _;
+    }
+
+    
+
+    // Creates a new token type and assings _initialSupply to minter
+    function create(uint256 _initialSupply, string calldata _uri) external returns(uint256 _id) {
+
+        _id = ++nonce;
+        creators[_id] = msg.sender;
+        balances[_id][msg.sender] = _initialSupply;
+
+        // Transfer event with mint semantic
+        emit TransferSingle(msg.sender, address(0x0), msg.sender, _id, _initialSupply);
+
+        if (bytes(_uri).length > 0)
+            emit URI(_uri, _id);
+    }
+
+    // Batch mint tokens. Assign directly to _to[].
+    function mint(uint256 _id, address[] calldata _to, uint256[] calldata _quantities) external creatorOnly(_id) {
+
+        for (uint256 i = 0; i < _to.length; ++i) {
+
+            address to = _to[i];
+            uint256 quantity = _quantities[i];
+
+            // Grant the items to the caller
+            balances[_id][to] = balances[_id][to]+quantity;
+
+            // Emit the Transfer/Mint event.
+            // the 0x0 source address implies a mint
+            // It will also provide the circulating supply info.
+            emit TransferSingle(msg.sender, address(0x0), to, _id, quantity);
+
+           
+        }
+    }
+
+    function setURI(string calldata _uri, uint256 _id) external creatorOnly(_id) {
+        emit URI(_uri, _id);
+    }
 }
