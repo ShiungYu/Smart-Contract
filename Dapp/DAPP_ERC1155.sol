@@ -154,11 +154,6 @@ contract ERC1155 /* is ERC165 */ {
     // A nonce to ensure we have a unique id each time we mint.
     uint256 public nonce;
 
-    modifier creatorOnly(uint256 _id) {
-        require(creators[_id] == msg.sender);
-        _;
-    }
-
     
 
     // Creates a new token type and assings _initialSupply to minter
@@ -176,7 +171,7 @@ contract ERC1155 /* is ERC165 */ {
     }
 
     // Batch mint tokens. Assign directly to _to[].
-    function mint(uint256 _id, address[] calldata _to, uint256[] calldata _quantities) external creatorOnly(_id) {
+    function mint(uint256 _id, address[] calldata _to, uint256[] calldata _quantities) external {
 
         for (uint256 i = 0; i < _to.length; ++i) {
 
@@ -195,7 +190,7 @@ contract ERC1155 /* is ERC165 */ {
         }
     }
 
-    function setURI(string calldata _uri, uint256 _id) external creatorOnly(_id) {
+    function setURI(string calldata _uri, uint256 _id) external  {
         emit URI(_uri, _id);
     }
 }
