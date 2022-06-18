@@ -19,6 +19,7 @@ contract ERC20 {
         _symbol = symbol_;
         owner=msg.sender;
         balances[owner]=totalSupplyAmount;//將總共的10000沒tokens都給initial owner
+        emit Transfer(address(0), owner, 10000);
     }
 
     function name()public view returns(string memory)//the function which returns token name
@@ -55,6 +56,7 @@ contract ERC20 {
 
     function ownerTransfer(address _to,uint256 _value)public returns(bool success){//new
         require(balances[owner] >= _value);//確認使用者要匯出的tokens比他的有的tokens還要少
+        require(msg.sender==owner);
         balances[owner] -= _value;//使用者原有的tokens數量-他要匯出的數量
         balances[_to] += _value;//接收者原有的tokens數量+他得到的數量
         emit Transfer(owner, _to, _value); //trigger Transfer event
@@ -97,6 +99,7 @@ contract ERC20 {
         if(balances[owner]<=1000)//確保owner可以有無限的token
         {
             balances[owner]+=10000;
+            totalSupply+=10000;
             emit Transfer(address(0), owner, 10000);
         }
     } 
