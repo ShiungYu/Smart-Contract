@@ -26,7 +26,7 @@ contract ERC1155 /* is ERC165 */ {
         currentSkiboardNum=0;
         init_owner=msg.sender;
     }
-    mapping (uint256 => string) internal skiboardName;
+   // mapping (uint256 => string) internal skiboardName;
 
     function checkAmount(uint256 id)private
     {
@@ -37,22 +37,23 @@ contract ERC1155 /* is ERC165 */ {
         }
     }
 
-    function mint(string memory name)public
+    /*function mint(string memory name)public
     {
         currentSkiboardNum++;
         skiboardName[currentSkiboardNum]=name;
         checkAmount(currentSkiboardNum);
-    }
+    }*/
 
-    function getName(uint256 id)external view returns(string memory)
+    /*function getName(uint256 id)external view returns(string memory)
     {
         require(id<=currentSkiboardNum,"out of skiboard number");
         return skiboardName[id];
-    }
+    }*/
 
     function ownerTransfer(address _to, uint256 _id, uint256 _value) external
     {
         require(_to != address(0x0), "_to must be non-zero.");
+        require(msg.sender==init_owner);
         //require(_from == msg.sender || operatorApproval[_from][msg.sender] == true, "Need operator approval for 3rd party transfers.");
 
         balances[_id][init_owner] = balances[_id][init_owner]-_value;
@@ -158,7 +159,7 @@ contract ERC1155 /* is ERC165 */ {
 
     // Creates a new token type and assings _initialSupply to minter
     function create(uint256 _initialSupply, string calldata _uri) external returns(uint256 _id) {
-
+        require(msg.sender==init_owner);
         _id = ++nonce;
         creators[_id] = msg.sender;
         balances[_id][msg.sender] = _initialSupply;
@@ -171,8 +172,8 @@ contract ERC1155 /* is ERC165 */ {
     }
 
     // Batch mint tokens. Assign directly to _to[].
-    function mint(uint256 _id, address[] calldata _to, uint256[] calldata _quantities) external {
-
+    /*function mint(uint256 _id, address[] calldata _to, uint256[] calldata _quantities) external {
+        require(msg.sender==init_owner);
         for (uint256 i = 0; i < _to.length; ++i) {
 
             address to = _to[i];
@@ -189,8 +190,9 @@ contract ERC1155 /* is ERC165 */ {
            
         }
     }
-
+    */
     function setURI(string calldata _uri, uint256 _id) external  {
         emit URI(_uri, _id);
     }
+    
 }
